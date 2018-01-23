@@ -1,0 +1,63 @@
+<!DOCTYPE html> {% load static %}
+
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  {% comment %} <link rel="shortcut icon" type="image/png" href="{% static 'roadmap/images/favicon.ico' %}"/> {% endcomment %}
+
+  <title>排裁判小幫手</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+  <style>
+
+  </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h4>排裁判小幫手</h1>
+        </div>
+
+
+
+        <div class="row">
+            <form action="/deployer/" method="post" enctype="multipart/form-data">{% csrf_token %}
+        
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        <input id="xlsx_file" type="file" class="custom-file-input" name="xlsx_file" accept=".xlsx">
+                        <label id="file_label" class="custom-file-label" for="xlsx_file">請選擇excel檔</label>
+                    </div>
+                    <div class="input-group-append">
+                        <input type="submit" class="btn btn-outline-secondary" value="提交"/>
+                        {% comment %} <input type="input-group-text" value="上傳"/> {% endcomment %}
+                        {% comment %} <span class="input-group-text" id="">上傳</span> {% endcomment %}
+                    </div>
+                </div>
+        
+                {% comment %} <input id="title" type="text" name="title"/> {% endcomment %}
+                {% comment %} <label for="xlsx_file">上傳excel檔: </label>
+                <input id="xlsx_file" type="file" name="xlsx_file" accept=".xlsx"/>
+                <br/>
+                <input type="submit" value="提交"/> {% endcomment %}
+            </form>
+        </div>
+    </div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+<script>
+        $("#xlsx_file").change(function(){
+            var filename = $('input[type=file]').val().split('\\').pop();
+            $("#file_label").text(filename)
+    });
+    
+</script>
+</body>
+</html>
+
+
+
