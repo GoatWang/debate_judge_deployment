@@ -138,9 +138,9 @@ def handle_uploaded_file(f, competition_name):
 
     insert_data = {
         "裁判清單": list(df_judges.T.to_dict().values()),
-        "避裁規則": list(df_judges.T.to_dict().values()),
-        "裁判互避": list(df_judges.T.to_dict().values()),
-        "場次資訊": list(df_judges.T.to_dict().values()),
+        "避裁規則": list(df_avoidance.T.to_dict().values()),
+        "裁判互避": list(df_avoidance_judges.T.to_dict().values()),
+        "場次資訊": list(df_session.T.to_dict().values()),
     }
 
     test_all_judges = ['丁冠羽', '丁啟翔', '丁文凱', '卓祐先', '廖本新', '彭韡', '歐陽正霆', '江運澤', '汪旻寬', '洪惇旻', '翟永誠', '蔡曉松', '蕭靖穎', '藍偉太', '賴永承', '鄭羽軒', '阮崇維', '黃婉儀']
