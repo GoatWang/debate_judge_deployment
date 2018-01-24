@@ -25,7 +25,10 @@ SECRET_KEY = '0(pd&oca$mnjyi@vb*4cmtez6u8m#kt0t1kuap^tlw1y4hj-38'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'debate-judge-deployment.herokuapp.com',
+    '127.0.0.1:8000',
+]
 
 
 # Application definition
