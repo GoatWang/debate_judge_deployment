@@ -137,6 +137,7 @@ def handle_uploaded_file(f, competition_name):
     collection = db.debate_judge_deployment
 
     insert_data = {
+        "盃賽名稱": competition_name,
         "裁判清單": list(df_judges.T.to_dict().values()),
         "避裁規則": list(df_avoidance.T.to_dict().values()),
         "裁判互避": list(df_avoidance_judges.T.to_dict().values()),
