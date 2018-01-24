@@ -1,1 +1,1 @@
-web: gunicorn hsinchu_linebot.wsgi
+web: gunicorn debate_judge_deployment.wsgi
