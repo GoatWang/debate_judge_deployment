@@ -3,6 +3,7 @@ import numpy as np
 import os
 from datetime import datetime
 from string import punctuation
+from pymongo import MongoClient
 
 def handle_uploaded_file(f, competition_name):
     if "files_for_download" not in os.listdir(os.path.join(os.getcwd(), 'deployer')):
@@ -127,6 +128,29 @@ def handle_uploaded_file(f, competition_name):
     filename = competition_name + nowtime + '.csv'
     df_session.to_csv(os.path.join(os.getcwd(), 'deployer', 'files_for_download', filename), index=False)
     num_nan = int((df_session.values.reshape(1, -1)[0] == None).sum())
+
+
+
+    # mongodb://<user_name>:<user_password>@ds<xxxxxx>.mlab.com:<xxxxx>/<database_name>
+    conn = MongoClient(os.environ.get("MONGO_URL"))
+    db = conn.superuniversitycourses
+    collection = db.debate_judge_deployment
+
+    insert_data = {
+        "裁判清單": list(df_judges.T.to_dict().values()),
+        "避裁規則": list(df_judges.T.to_dict().values()),
+        "裁判互避": list(df_judges.T.to_dict().values()),
+        "場次資訊": list(df_judges.T.to_dict().values()),
+    }
+
+    test_all_judges = ['丁冠羽', '丁啟翔', '丁文凱', '卓祐先', '廖本新', '彭韡', '歐陽正霆', '江運澤', '汪旻寬', '洪惇旻', '翟永誠', '蔡曉松', '蕭靖穎', '藍偉太', '賴永承', '鄭羽軒', '阮崇維', '黃婉儀']
+    if all_judges == test_all_judges:
+        insert_data['Test'] = True
+    else:
+        insert_data['Test'] = False
+        
+    collection.insert_one(insert_data)
+
     return all_schools, all_judges, df_session.to_html(index=False), num_nan, filename
 
 

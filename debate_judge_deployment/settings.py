@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'debate-judge-deployment.herokuapp.com',
-    '127.0.0.1:8000',
+    '127.0.0.1',
 ]
 
 

@@ -121,6 +121,7 @@
     });
     
     $("#submit").click(function(event){
+        $("body").css("cursor", "progress");
         event.preventDefault();
         $.ajax({
             url: '/deployer/',
@@ -130,6 +131,8 @@
             processData: false,
             contentType: false,
             success: function(data){
+                $("body").css("cursor", "default");
+
                 $("#submit").val("太垃圾了，我要重排!")
                 $("#preview").html("")
 
