@@ -4,3 +4,4 @@ staticfiles
 .env
 .vscode
 __pycache__
+files_for_download

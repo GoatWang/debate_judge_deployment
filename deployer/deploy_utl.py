@@ -1,8 +1,18 @@
 import pandas as pd
 import numpy as np
+import os
+from datetime import datetime
+from string import punctuation
 
+def handle_uploaded_file(f, competition_name):
+    if "files_for_download" not in os.listdir(os.path.join(os.getcwd(), 'deployer')):
+        os.mkdir(os.path.join(os.getcwd(), 'deployer', 'files_for_download'))
+    filenames = os.listdir(os.path.join(os.getcwd(), 'deployer', 'files_for_download'))
+    
+    for filename in filenames:
+        file_fullpath = os.path.join(os.getcwd(), 'deployer', 'files_for_download', filename)
+        os.remove(file_fullpath)
 
-def handle_uploaded_file(f):
     xl =pd.ExcelFile(f)
 
     # 找出四張表: 裁判清單、避裁規則、裁判互避、場次資、
@@ -106,11 +116,18 @@ def handle_uploaded_file(f):
         sch2 = row['學校二']
         arranged_judges, df_error_left_judges, conflict_judges = find_judges(df_judges_arragement, sess, place, sch1, sch2)
         df_session.loc[idx, ['裁判一', '裁判二', '裁判三']] = arranged_judges
-        if len(df_error_left_judges) != 0 or len(conflict_judges) != 0:
-            print(sess, place, sch1, sch2)
-            print(df_error_left_judges)
-            print(conflict_judges)
-    return df_session.to_html()
+        # if len(df_error_left_judges) != 0 or len(conflict_judges) != 0:
+        #     print(sess, place, sch1, sch2)
+        #     print(df_error_left_judges)
+        #     print(conflict_judges)
+    nowtime = str(datetime.now())
+    puns = punctuation + ' '
+    for p in puns:
+        nowtime = nowtime.replace(p, "")
+    filename = competition_name + nowtime + '.csv'
+    df_session.to_csv(os.path.join(os.getcwd(), 'deployer', 'files_for_download', filename), index=False)
+    num_nan = int((df_session.values.reshape(1, -1)[0] == None).sum())
+    return all_schools, all_judges, df_session.to_html(index=False), num_nan, filename
 
 
     

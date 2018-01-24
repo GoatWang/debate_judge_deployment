@@ -6,53 +6,159 @@
   <meta charset="utf-8">
   {% comment %} <link rel="shortcut icon" type="image/png" href="{% static 'roadmap/images/favicon.ico' %}"/> {% endcomment %}
 
-  <title>排裁判小幫手</title>
+  <title>喬裁小幫手</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
   <style>
-
+    h3, h4 {padding: 5px}
   </style>
 
 </head>
 <body>
     <div class="container">
         <div class="row">
-            <h4>排裁判小幫手</h1>
+            <h3>喬裁小幫手</h3>
         </div>
 
-
+        <div class="row">
+            <h4>檔案上傳</h4>
+        </div>
 
         <div class="row">
-            <form action="/deployer/" method="post" enctype="multipart/form-data">{% csrf_token %}
-        
+            
+            <form id="upload_form" action="/deployer/" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">盃賽名稱</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="辯革盃" id="competition_name" name="competition_name">
+                </div>
+                          
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">檔案上傳</span>
+                    </div>
                     <div class="custom-file">
                         <input id="xlsx_file" type="file" class="custom-file-input" name="xlsx_file" accept=".xlsx">
                         <label id="file_label" class="custom-file-label" for="xlsx_file">請選擇excel檔</label>
                     </div>
-                    <div class="input-group-append">
-                        <input type="submit" class="btn btn-outline-secondary" value="提交"/>
-                        {% comment %} <input type="input-group-text" value="上傳"/> {% endcomment %}
-                        {% comment %} <span class="input-group-text" id="">上傳</span> {% endcomment %}
-                    </div>
                 </div>
-        
-                {% comment %} <input id="title" type="text" name="title"/> {% endcomment %}
-                {% comment %} <label for="xlsx_file">上傳excel檔: </label>
-                <input id="xlsx_file" type="file" name="xlsx_file" accept=".xlsx"/>
-                <br/>
-                <input type="submit" value="提交"/> {% endcomment %}
+                <div class="input-group mb-3">
+                   <input id="submit" type="submit" class="btn btn-outline-secondary" value="開心喬裁判"/>
+                </div>
             </form>
+        </div>
+        <div id="preview" class="row">
+
+        </div>
+
+        <div class="row" style='margin-top:150px'>
+            <h4>說明文件</h4>
+        </div>
+        <div class="row" style='margin-bottom:50px'>
+            <ol>
+                <li>上傳檔案範例: <a href="deployer/downloadsample">下載</a></li>
+                <li>None代表已經沒有可供使用的裁判，請放寬避裁限制，或是增加裁判。</li>
+                <li>聯絡資訊: <a href="https://www.facebook.com/jeremy45555" class="icon fa-facebook">王選仲</a></li>
+            </ol>
+            
+        </div>
+        <div class="row" >
         </div>
     </div>
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+{% comment %} <script src="{% static "deployer/js/jquery.min.js" %}"></script>
+<script src="{% static "deployer/js/jquery.poptrox.min.js" %}"></script>
+<script src="{% static "deployer/js/skel.min.js" %}"></script>
+<script src="{% static "deployer/js/util.js" %}"></script>
+<script src="{% static "deployer/js/main.js" %}"></script> {% endcomment %}
 <script>
-        $("#xlsx_file").change(function(){
-            var filename = $('input[type=file]').val().split('\\').pop();
-            $("#file_label").text(filename)
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = ""
+    $( document ).ready(function() {
+        csrftoken = getCookie('csrftoken');
+    });
+
+    $("#xlsx_file").change(function(){
+        var filename = $('input[type=file]').val().split('\\').pop();
+        $("#file_label").text(filename)
+    });
+
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+    
+    $("#submit").click(function(event){
+        event.preventDefault();
+        $.ajax({
+            url: '/deployer/',
+            type: 'POST',
+            cache: false,
+            data: new FormData($('#upload_form')[0]),
+            processData: false,
+            contentType: false,
+            success: function(data){
+                $("#submit").val("太垃圾了，我要重排!")
+                $("#preview").html("")
+
+                var all_schools = data.all_schools
+                var all_judges = data.all_judges
+                var arranged_table = data.arranged_table
+                var filename = data.filename
+                var num_nan = data.num_nan
+
+                // second table
+                $("#preview").append("<h4>結果預覽</h4>")
+                if (num_nan > 0) {
+                    $("#preview").append("<p style='color:red'>注意: 有場次沒有可排裁判</p>")
+                }
+                $("#preview").append(arranged_table)
+                $("#preview table").addClass("table table-striped")
+                $("#preview table").css("text-align", "center")
+                $("#preview tr").css("text-align", "center")
+                $("#preview thead").addClass("thead-light")
+
+
+                // first table
+                stats_table = "<h4>簡單統計</h4>"
+                stats_table += '<table id="stats_table" class="table"><tbody>'
+                stats_table += '<tr><td width=13%>' + '學校(' + String(all_schools.length) + '間)</td><td>' + all_schools.join(", ") + '</td></tr>'
+                stats_table += '<tr><td>' + '裁判(' + String(all_judges.length) + '人)</td><td>' + all_judges.join(", ") + '</td></tr>'
+                stats_table += '</tbody></table>'
+                $("#preview").prepend(stats_table)
+                $("#preview").append("<a href='/deployer/download/" + filename + "/' id='download' type='button' class='btn btn-secondary'>" + filename + " 下載</a>")
+            }
+
+        }).done(function(res) {
+        }).fail(function(res) {});
+        
     });
     
 </script>
