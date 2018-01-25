@@ -122,7 +122,7 @@
             }
         }
     });
-    
+
     $("#submit").click(function(event){
         $("body").css("cursor", "progress");
         event.preventDefault();
@@ -151,11 +151,11 @@
                     $("#preview").append("<p style='color:red'>注意: 有場次沒有可排裁判</p>")
                 }
                 $("#preview").append(arranged_table)
+                $("#preview table").first().attr('id', 'main_table')
                 $("#preview table").addClass("table table-striped")
                 $("#preview table").css("text-align", "center")
                 $("#preview tr").css("text-align", "center")
                 $("#preview thead").addClass("thead-light")
-
 
                 // first table
                 stats_table = "<h4>簡單統計</h4>"
@@ -165,13 +165,16 @@
                 stats_table += '</tbody></table>'
                 $("#preview").prepend(stats_table)
                 $("#preview").append("<a href='/deployer/download/" + filename + "/' id='download' type='button' class='btn btn-secondary'>" + filename + " 下載</a>")
+            
+            
             }
 
         }).done(function(res) {
         }).fail(function(res) {});
         
     });
-    
+
+
 </script>
 </body>
 </html>

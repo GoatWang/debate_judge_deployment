@@ -8,8 +8,6 @@ from django.http import JsonResponse
 import os
 
 
-# Create your tests here.
-
 
 def index(request):
     if request.method == 'POST':

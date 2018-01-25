@@ -5,6 +5,36 @@ from datetime import datetime
 from string import punctuation
 from pymongo import MongoClient
 
+def get_school_info(xl, school_name):
+    df_avoidance = xl.parse("避裁規則")
+    df_avoidance.columns = ['學校', '避裁']
+    school_info = {}
+    if school_name in list(df_avoidance['學校']):
+        school_info = df_avoidance[df_avoidance['學校'] == school_name].iloc[0].to_dict()
+    return school_info
+
+def get_judge_info(xl, judge_name):
+    df_judges = xl.parse("裁判清單")
+    df_avoidance = xl.parse("避裁規則")
+    df_session = xl.parse("場次資訊")
+    all_schools = list(set(np.hstack([list(df_session['學校一']), list(df_session['學校二'])])))
+
+    df_judges['可排時段'] = df_judges['可排時段'].astype(str).apply(lambda x : x.split(', '))
+    def extend_judge_table(row):
+        row['避裁學校'] = []
+        for sch in all_schools:
+            avoid_judges = list(df_avoidance.loc[df_avoidance['學校'] == sch, '裁判'])
+            avoid_judges = avoid_judges[0] if avoid_judges != [] else []
+            if row['裁判'] in avoid_judges:
+               row['避裁學校'].append(sch) 
+        return row
+    df_judges = df_judges.apply(extend_judge_table, axis=1)
+
+    judge_info = {}
+    if judge_name in list(df_judges['裁判']):
+        judge_info = df_judges[df_judges['裁判'] == judge_name].iloc[0].astype(str).to_dict()
+    return judge_info
+
 def handle_uploaded_file(f, competition_name):
     if "files_for_download" not in os.listdir(os.path.join(os.getcwd(), 'deployer')):
         os.mkdir(os.path.join(os.getcwd(), 'deployer', 'files_for_download'))
@@ -132,28 +162,43 @@ def handle_uploaded_file(f, competition_name):
 
 
     # mongodb://<user_name>:<user_password>@ds<xxxxxx>.mlab.com:<xxxxx>/<database_name>
-    conn = MongoClient(os.environ.get("MONGO_URL"))
-    db = conn.superuniversitycourses
-    collection = db.debate_judge_deployment
+    # conn = MongoClient(os.environ.get("MONGO_URL"))
+    # db = conn.superuniversitycourses
+    # collection = db.debate_judge_deployment
 
-    insert_data = {
-        "盃賽名稱": competition_name,
-        "裁判清單": list(df_judges.T.to_dict().values()),
-        "避裁規則": list(df_avoidance.T.to_dict().values()),
-        "裁判互避": list(df_avoidance_judges.T.to_dict().values()),
-        "場次資訊": list(df_session.T.to_dict().values()),
-        "execute_time": datetime.now()
-    }
+    # insert_data = {
+    #     "盃賽名稱": competition_name,
+    #     "裁判清單": list(df_judges.T.to_dict().values()),
+    #     "避裁規則": list(df_avoidance.T.to_dict().values()),
+    #     "裁判互避": list(df_avoidance_judges.T.to_dict().values()),
+    #     "場次資訊": list(df_session.T.to_dict().values()),
+    #     "execute_time": datetime.now()
+    # }
 
-    test_all_judges = ['丁冠羽', '丁啟翔', '丁文凱', '卓祐先', '廖本新', '彭韡', '歐陽正霆', '江運澤', '汪旻寬', '洪惇旻', '翟永誠', '蔡曉松', '蕭靖穎', '藍偉太', '賴永承', '鄭羽軒', '阮崇維', '黃婉儀']
-    if all_judges == test_all_judges:
-        insert_data['Test'] = True
-    else:
-        insert_data['Test'] = False
+    # test_all_judges = ['丁冠羽', '丁啟翔', '丁文凱', '卓祐先', '廖本新', '彭韡', '歐陽正霆', '江運澤', '汪旻寬', '洪惇旻', '翟永誠', '蔡曉松', '蕭靖穎', '藍偉太', '賴永承', '鄭羽軒', '阮崇維', '黃婉儀']
+    # if all_judges == test_all_judges:
+    #     insert_data['Test'] = True
+    # else:
+    #     insert_data['Test'] = False
         
-    collection.insert_one(insert_data)
+    # collection.insert_one(insert_data)
 
-    return all_schools, all_judges, df_session.to_html(index=False), num_nan, filename
+    return_html_table = df_session.to_html(index=False)
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(return_html_table, 'lxml')
+    
+    trs = soup.find('tbody').find_all('tr')
+    for tr in trs:
+        tds = tr.find_all('td')
+        for idx, td in enumerate(tds):
+            if idx in [2,3]:
+                school_name = td.text
+                td['title'] = str(get_school_info(xl, school_name))
+            if idx in [4,5,6]:
+                judge_name = td.text
+                td['title'] = str(get_judge_info(xl, judge_name))
+
+    return all_schools, all_judges, str(soup.html), num_nan, filename
 
 
     
